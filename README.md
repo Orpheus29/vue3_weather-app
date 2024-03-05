@@ -8,12 +8,11 @@
 
 ## ❄️🌬️Cold weather🥶:
 
-![image](https://user-images.githubusercontent.com/63835313/167329348-c5e5b405-10d0-4320-9e58-db0ed1db1b58.png)
+![image](https://github.com/Orpheus29/vue3_weather-app/assets/110335429/6cc7af1b-cdef-49ae-a785-13dd7632d006)
 
 ## ☀️🌡️Warm weather😊:
 
-![image](https://user-images.githubusercontent.com/63835313/167329468-873a932c-9ae1-4290-b06e-e91a7036590c.png)
-
+![image](https://github.com/Orpheus29/vue3_weather-app/assets/110335429/e88e2c05-798c-47e6-9aaa-a16a2cba8a46)
 
 
 <h2 align="center">📌Running your application locally📌</h2>

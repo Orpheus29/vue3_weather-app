@@ -8,12 +8,28 @@
           placeholder="Type city name"
           v-model="city"
           @keyup.enter="fetchWeather"
-          @input="debouncedGetCities"
+          @input="debouncedFetchCities"
           @focus="showCities = true"
           @click.stop
         />
+
         <button class="clear-button" v-if="city" @click="clearInput">×</button>
       </div>
+
+      <ErrorMessage
+        v-if="errorMessage"
+        class="is-warning"
+        :active="errorMessage !== ''"
+      >
+        <template #default="">
+          <p>{{ errorMessage }}</p>
+        </template>
+
+        <template #header>
+          <p>Oops...</p>
+        </template>
+      </ErrorMessage>
+
       <ul
         v-if="showCities && cities.size"
         ref="dropdown"
@@ -27,6 +43,7 @@
           {{ city }}
         </li>
       </ul>
+
       <div class="weather-wrap" v-if="showWeather">
         <div class="location-box">
           <div class="location">
@@ -45,19 +62,24 @@
 </template>
 
 <script>
+import ErrorMessage from './components/ErrorMessage.vue';
 import { buildDate } from './utils/buildDate';
 import { debounce } from './utils/debounce';
-import { API_KEY, BASE_URL } from './utils/consts';
+import { getCities, getWeather } from './api/weather';
 
 export default {
   name: 'App',
+  components: {
+    ErrorMessage
+  },
   data() {
     return {
       city: '',
       weather: {},
       cities: [],
       showWeather: false,
-      showCities: false
+      showCities: false,
+      errorMessage: ''
     };
   },
 
@@ -65,8 +87,8 @@ export default {
     formattedDate() {
       return buildDate();
     },
-    debouncedGetCities() {
-      return debounce(this.getCities, 500);
+    debouncedFetchCities() {
+      return debounce(this.fetchCities, 500);
     }
   },
 
@@ -76,27 +98,17 @@ export default {
 
   methods: {
     fetchWeather() {
+      this.errorMessage = '';
       if (this.city) {
-        fetch(
-          `${BASE_URL}data/2.5/weather?q=${this.city}&units=metric&APPID=${API_KEY}`
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.cod === 200) {
-              this.weather = data;
-              this.showCities = false;
-              this.showWeather = true;
-            } else {
-              console.error(
-                `The server can't find weather data for ${this.city}.`
-              );
-            }
+        getWeather(this.city)
+          .then(({ data }) => {
+            this.weather = data;
+            this.showCities = false;
+            this.showWeather = true;
           })
-          .catch((error) => {
-            console.error(
-              `The server can't find weather data for ${this.city}. `,
-              error
-            );
+          .catch(() => {
+            this.showWeather = false;
+            this.errorMessage = `Server can't find weather data for this location: ${this.city}.`;
           });
       }
     },
@@ -105,28 +117,29 @@ export default {
       this.city = '';
       this.showWeather = false;
       this.showCities = false;
+      this.errorMessage = '';
     },
 
-    getCities() {
+    fetchCities() {
       this.cities = [];
+      this.errorMessage = '';
       if (this.city) {
-        fetch(
-          `${BASE_URL}geo/1.0/direct?q=${this.city}&limit=10&APPID=${API_KEY}`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            this.cities = new Set(data.map((city) => `${city.name}, ${city.country}`));
+        getCities(this.city).then(({ data }) => {
+          if (data.length) {
+            this.cities = new Set(
+              data.map((city) => `${city.name}, ${city.country}`)
+            );
             this.showCities = true;
-          })
-          .catch((error) => {
-            console.error('Error fetching autocomplete suggestions:', error);
-          });
+          } else {
+            this.showWeather = false;
+            this.errorMessage = `No city on server matches this query: ${this.city}.`;
+          }
+        });
       }
     },
 
     selectCity(suggestion) {
       this.city = suggestion;
-      console.log(this.city);
       this.showCities = false;
       this.fetchWeather();
     },
@@ -135,6 +148,7 @@ export default {
       if (this.$refs.dropdown && !this.$refs.dropdown.contains(event.target)) {
         this.showCities = false;
       }
+      this.errorMessage = '';
     },
 
     beforeUnmount() {

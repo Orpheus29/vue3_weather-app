@@ -65,7 +65,7 @@ main {
   right: 15px;
   top: 50%;
   font-size: 30px;
-  transform: translateY(-50%);
+  transform: translateY(-55%);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -74,18 +74,12 @@ main {
 
 .autocomplete-dropdown {
   list-style: none;
-  padding: 0;
   margin-inline: 10px;
   border: 1px solid #ccc;
   border-top: none;
-  /* Remove top border */
   border-radius: 0 0 5px 5px;
-  /* Rounded corners at the bottom */
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  /* Add a shadow */
   background-color: #fff;
-  max-height: 200px;
-  /* Limit maximum height */
   overflow-y: auto;
   /* Enable vertical scrolling if needed */
 
@@ -100,15 +94,16 @@ main {
   }
 }
 
-.location-box {
+.weather-wrap {
   margin-top: 30px;
+}
 
+.location-box {
   & .location {
     color: #fff;
     font-size: 32px;
     font-weight: 500;
     text-align: center;
-    // text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
     margin-bottom: 15px;
   }
 

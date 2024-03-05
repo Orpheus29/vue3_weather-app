@@ -1,5 +1,6 @@
 export const debounce = (func, wait) => {
   let timeout;
+  
   return function () {
     const context = this;
     const args = arguments;

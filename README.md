@@ -1,36 +1,41 @@
-# vue_weather
+<h1 align="center">🌧️🔰Vue3 Weather App🔰🌧️</h1>
 
-## Screenshots from app:
-```
-cold weather
-```
+<p align="center">
+  <sup>A fancy app to find out about the weather worldwide.</sup>
+</p>
+
+<h2 align="center">📋About📋</h2>
+
+## ❄️🌬️Cold weather🥶:
+
 ![image](https://user-images.githubusercontent.com/63835313/167329348-c5e5b405-10d0-4320-9e58-db0ed1db1b58.png)
-```
-warm weather
-```
+
+## ☀️🌡️Warm weather😊:
+
 ![image](https://user-images.githubusercontent.com/63835313/167329468-873a932c-9ae1-4290-b06e-e91a7036590c.png)
 
 
 
-## Project setup
+<h2 align="center">📌Running your application locally📌</h2>
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### For compilation and hot-reloads during development type:
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### For compilation and minification for production type:
 ```
 npm run build
 ```
 
-### Lints and fixes files
+### For linting and fixing files:
 ```
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### To customize the app configuration:
+see [Configuration Reference](https://cli.vuejs.org/config/).

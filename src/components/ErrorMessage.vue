@@ -1,8 +1,5 @@
 <template>
-  <article
-    class="message"
-    :class="{ 'message--hidden': !active }"
-  >
+  <article class="message" :class="{ 'message--hidden': !active }">
     <div class="message-header">
       <slot name="header"></slot>
       <button class="delete"></button>
@@ -17,7 +14,7 @@
 <script>
 export default {
   props: {
-    active: Boolean,
-  },
-}
+    active: Boolean
+  }
+};
 </script>

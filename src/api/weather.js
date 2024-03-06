@@ -1,5 +1,4 @@
-import { client } from '../utils/httpClient';
-import { API_KEY } from '../utils/consts';
+import { API_KEY, client } from '../utils';
 
 export const getWeather = (city) => {
   return client.get(`data/2.5/weather?q=${city}&units=metric&APPID=${API_KEY}`);

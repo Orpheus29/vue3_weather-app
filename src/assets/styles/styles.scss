@@ -87,8 +87,11 @@ main {
     padding: 10px;
     cursor: pointer;
 
-    &:hover,
-    &:active {
+    &:hover {
+      background-color: #ccc;
+    }
+
+    &.is-active {
       background-color: #f2f2f2;
     }
   }

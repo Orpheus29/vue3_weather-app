@@ -7,10 +7,13 @@
           class="search-bar"
           placeholder="Type city name"
           v-model="city"
-          @keyup.enter="fetchWeather"
           @input="debouncedFetchCities"
           @focus="showCities = true"
           @click.stop
+          @keyup.down="onArrowDown"
+          @keyup.up="onArrowUp"
+          @keyup.enter="onEnter"
+          @keyup.esc="clearInput"
         />
 
         <button class="clear-button" v-if="city" @click="clearInput">×</button>
@@ -38,7 +41,9 @@
         <li
           v-for="(city, index) in cities"
           :key="index"
-          @click="selectCity(city)"
+          @click="selectCity(city, index)"
+          ref="options"
+          :class="{ 'is-active': index === arrowCounter }"
         >
           {{ city }}
         </li>
@@ -63,8 +68,7 @@
 
 <script>
 import ErrorMessage from './components/ErrorMessage.vue';
-import { buildDate } from './utils/buildDate';
-import { debounce } from './utils/debounce';
+import { buildDate, debounce, ERRORS } from './utils';
 import { getCities, getWeather } from './api/weather';
 
 export default {
@@ -77,9 +81,11 @@ export default {
       city: '',
       weather: {},
       cities: [],
+      lastCity: '',
       showWeather: false,
       showCities: false,
-      errorMessage: ''
+      errorMessage: '',
+      arrowCounter: 0
     };
   },
 
@@ -99,7 +105,7 @@ export default {
   methods: {
     fetchWeather() {
       this.errorMessage = '';
-      if (this.city) {
+      if (this.city && this.city !== this.lastCity) {
         getWeather(this.city)
           .then(({ data }) => {
             this.weather = data;
@@ -108,21 +114,25 @@ export default {
           })
           .catch(() => {
             this.showWeather = false;
-            this.errorMessage = `Server can't find weather data for this location: ${this.city}.`;
+            this.errorMessage = `${ERRORS.NO_WEATHER}: ${this.city}.`;
+          })
+          .finally(() => {
+            this.lastCity = this.city;
           });
       }
     },
 
     clearInput() {
       this.city = '';
+      this.cities.clear();
       this.showWeather = false;
       this.showCities = false;
       this.errorMessage = '';
     },
 
     fetchCities() {
-      this.cities = [];
       this.errorMessage = '';
+
       if (this.city) {
         getCities(this.city).then(({ data }) => {
           if (data.length) {
@@ -132,7 +142,7 @@ export default {
             this.showCities = true;
           } else {
             this.showWeather = false;
-            this.errorMessage = `No city on server matches this query: ${this.city}.`;
+            this.errorMessage = `${ERRORS.NO_CITIES}: ${this.city}.`;
           }
         });
       }
@@ -149,11 +159,46 @@ export default {
         this.showCities = false;
       }
       this.errorMessage = '';
+      this.arrowCounter = -1;
     },
 
     beforeUnmount() {
       document.removeEventListener('click', this.onClickOutside);
-    }
+    },
+
+    onArrowDown(ev) {
+      ev.preventDefault()
+      if (this.showCities && (this.arrowCounter < this.cities.size - 1)) {
+        this.arrowCounter = this.arrowCounter + 1;
+        console.log(this.arrowCounter);
+        this.fixScrolling();
+      }
+    },
+
+    onArrowUp(ev) {
+      ev.preventDefault()
+      if (this.arrowCounter > 0) {
+        this.arrowCounter = this.arrowCounter - 1;
+        console.log(this.arrowCounter);
+        this.fixScrolling();
+      }
+    },
+
+    onEnter() {
+      if (this.arrowCounter === -1) {
+        return;
+      }
+      this.city = Array.from(this.cities)[this.arrowCounter];
+      console.log(this.cities);
+      this.showCities = false;
+      this.arrowCounter = -1;
+      this.fetchWeather();
+    },
+    
+    fixScrolling(){
+      const liH = this.$refs.options[this.arrowCounter].clientHeight;
+      this.$refs.dropdown.scrollTop = liH * this.arrowCounter;
+    },
   }
 };
 </script>

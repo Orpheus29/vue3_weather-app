@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import LocalizedFormat from 'dayjs/plugin/LocalizedFormat';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 dayjs.extend(utc);
-dayjs.extend(LocalizedFormat);
+dayjs.extend(localizedFormat);
 
 export const buildDate = (sec, timezone) =>
   dayjs

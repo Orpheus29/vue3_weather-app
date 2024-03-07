@@ -1,34 +1,12 @@
-export const buildDate = () => {
-  let d = new Date();
-  let months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ];
-  
-  let days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday'
-  ];
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import LocalizedFormat from 'dayjs/plugin/LocalizedFormat';
 
-  let day = days[d.getDay()];
-  let date = d.getDate();
-  let month = months[d.getMonth()];
-  let year = d.getFullYear();
+dayjs.extend(utc);
+dayjs.extend(LocalizedFormat);
 
-  return `${day}, ${date} ${month} ${year}`;
-};
+export const buildDate = (sec, timezone) =>
+  dayjs
+    .unix(sec)
+    .utcOffset(timezone === 0 ? timezone : timezone / 60)
+    .format('llll');

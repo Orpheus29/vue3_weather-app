@@ -1,19 +1,21 @@
 <template>
-  <div id="app" :class="showWeather && weather.main.temp > 16 ? 'warm' : ''">
+  <div id="app" :class="weatherClass">
     <main>
+      <div class="title">Weather App</div>
+
       <div class="search-box">
         <input
           type="text"
           class="search-bar"
           placeholder="Type city name"
-          v-model="city"
+          v-model="city[0]"
           @input="debouncedFetchCities"
-          @focus="showCities = true"
-          @click.stop
+          @focus="(showCities = true), (errorMessage = '')"
           @keyup.down="onArrowDown"
-          @keyup.up="onArrowUp"
-          @keyup.enter="onEnter"
           @keyup.esc="clearInput"
+          @keyup.enter="onEnter"
+          @keyup.up="onArrowUp"
+          @click.stop
         />
 
         <button class="clear-button" v-if="city" @click="clearInput">×</button>
@@ -34,7 +36,7 @@
       </ErrorMessage>
 
       <ul
-        v-if="showCities && cities.size"
+        v-if="showCities && cities.length"
         ref="dropdown"
         class="autocomplete-dropdown"
       >
@@ -45,47 +47,42 @@
           ref="options"
           :class="{ 'is-active': index === arrowCounter }"
         >
-          {{ city }}
+          {{ city[0] }}
         </li>
       </ul>
 
-      <div class="weather-wrap" v-if="showWeather">
-        <div class="location-box">
-          <div class="location">
-            {{ weather.name }}, {{ weather.sys.country }}
-          </div>
-          <div class="date">{{ formattedDate }}</div>
-        </div>
-
-        <div class="weather-box">
-          <div class="temp">{{ Math.round(weather.main.temp) }}°C</div>
-          <div class="weather">{{ weather.weather[0].main }}</div>
-        </div>
-      </div>
+      <WeatherDisplay
+        :city="location"
+        :weather="weather"
+        :showWeather="showWeather"
+      />
     </main>
   </div>
 </template>
 
 <script>
 import ErrorMessage from './components/ErrorMessage.vue';
+import WeatherDisplay from './components/WeatherDisplay.vue';
 import { buildDate, debounce, ERRORS } from './utils';
 import { getCities, getWeather } from './api/weather';
 
 export default {
   name: 'App',
   components: {
-    ErrorMessage
+    ErrorMessage,
+    WeatherDisplay
   },
   data() {
     return {
-      city: '',
+      city: [],
       weather: {},
       cities: [],
       lastCity: '',
       showWeather: false,
       showCities: false,
       errorMessage: '',
-      arrowCounter: 0
+      arrowCounter: 0,
+      location: ''
     };
   },
 
@@ -95,6 +92,11 @@ export default {
     },
     debouncedFetchCities() {
       return debounce(this.fetchCities, 500);
+    },
+    weatherClass() {
+      return {
+        warm: this.showWeather && this.weather.main.temp > 16
+      };
     }
   },
 
@@ -105,16 +107,19 @@ export default {
   methods: {
     fetchWeather() {
       this.errorMessage = '';
+
       if (this.city && this.city !== this.lastCity) {
-        getWeather(this.city)
+        getWeather(this.city[1], this.city[2])
           .then(({ data }) => {
             this.weather = data;
             this.showCities = false;
             this.showWeather = true;
+            this.location = this.city[0];
           })
           .catch(() => {
             this.showWeather = false;
-            this.errorMessage = `${ERRORS.NO_WEATHER}: ${this.city}.`;
+            this.showCities = false;
+            this.errorMessage = `${ERRORS.NO_WEATHER}: ${this.city[0]}.`;
           })
           .finally(() => {
             this.lastCity = this.city;
@@ -123,8 +128,8 @@ export default {
     },
 
     clearInput() {
-      this.city = '';
-      this.cities.clear();
+      this.city = [];
+      this.cities = [];
       this.showWeather = false;
       this.showCities = false;
       this.errorMessage = '';
@@ -132,16 +137,20 @@ export default {
 
     fetchCities() {
       this.errorMessage = '';
+      this.city.length = 1;
 
       if (this.city) {
         getCities(this.city).then(({ data }) => {
           if (data.length) {
-            this.cities = new Set(
-              data.map((city) => `${city.name}, ${city.country}`)
-            );
+            this.cities = data.map((city) => [
+              `${city.name}${city.state ? `, ${city.state}` : ''} ${city.country}`,
+              city.lat,
+              city.lon
+            ]);
             this.showCities = true;
           } else {
             this.showWeather = false;
+            this.showCities = false;
             this.errorMessage = `${ERRORS.NO_CITIES}: ${this.city}.`;
           }
         });
@@ -167,8 +176,8 @@ export default {
     },
 
     onArrowDown(ev) {
-      ev.preventDefault()
-      if (this.showCities && (this.arrowCounter < this.cities.size - 1)) {
+      ev.preventDefault();
+      if (this.showCities && this.arrowCounter < this.cities.length - 1) {
         this.arrowCounter = this.arrowCounter + 1;
         console.log(this.arrowCounter);
         this.fixScrolling();
@@ -176,7 +185,7 @@ export default {
     },
 
     onArrowUp(ev) {
-      ev.preventDefault()
+      ev.preventDefault();
       if (this.arrowCounter > 0) {
         this.arrowCounter = this.arrowCounter - 1;
         console.log(this.arrowCounter);
@@ -188,17 +197,17 @@ export default {
       if (this.arrowCounter === -1) {
         return;
       }
-      this.city = Array.from(this.cities)[this.arrowCounter];
+      this.city = this.cities[this.arrowCounter];
       console.log(this.cities);
       this.showCities = false;
       this.arrowCounter = -1;
       this.fetchWeather();
     },
-    
-    fixScrolling(){
+
+    fixScrolling() {
       const liH = this.$refs.options[this.arrowCounter].clientHeight;
       this.$refs.dropdown.scrollTop = liH * this.arrowCounter;
-    },
+    }
   }
 };
 </script>

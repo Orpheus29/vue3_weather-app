@@ -30,6 +30,15 @@ main {
       rgba(0, 0, 0, 0.75));
 }
 
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 25px;
+}
+
 .search-box {
   width: 100%;
   margin-bottom: 5px;
@@ -73,13 +82,15 @@ main {
 }
 
 .autocomplete-dropdown {
+  position: absolute;
+  width: 100%;
   list-style: none;
   margin-inline: 10px;
   border: 1px solid #ccc;
   border-top: none;
   border-radius: 0 0 5px 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.7);
   overflow-y: auto;
   /* Enable vertical scrolling if needed */
 
@@ -88,11 +99,11 @@ main {
     cursor: pointer;
 
     &:hover {
-      background-color: #ccc;
+      background-color: rgba(204, 204, 204, 0.7);
     }
 
     &.is-active {
-      background-color: #f2f2f2;
+      background-color: rgba(242, 242, 242, 0.6);
     }
   }
 }
@@ -102,20 +113,24 @@ main {
 }
 
 .location-box {
-  & .location {
-    color: #fff;
+  text-align: center;
+  font-weight: 500;
+  color: #fff;
+
+  .location {
     font-size: 32px;
-    font-weight: 500;
-    text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
 
-  & .date {
-    color: #fff;
-    font-size: 18px;
-    font-weight: 500;
-    text-align: center;
+  .date {
+    font-size: 16px;
     font-style: italic;
+
+    &-title {
+      font-size: 18px;
+      font-style: normal;
+      margin-bottom: 4px;
+    }
   }
 }
 
@@ -130,7 +145,7 @@ main {
     font-weight: 500;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
-    margin: 30px 0px;
+    margin-bottom: 30px;
   }
 
   & .weather {

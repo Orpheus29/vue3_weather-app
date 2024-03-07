@@ -27,20 +27,20 @@
 npm install
 ```
 
-### For compilation and hot-reloads during development type:
+#### For compilation and hot-reloads during development type:
 ```
 npm run serve
 ```
 
-### For compilation and minification for production type:
+#### For compilation and minification for production type:
 ```
 npm run build
 ```
 
-### For linting and fixing files:
+#### For linting and fixing files:
 ```
 npm run lint
 ```
 
-### To customize the app configuration:
+#### To customize the app configuration:
 see [Configuration Reference](https://cli.vuejs.org/config/).

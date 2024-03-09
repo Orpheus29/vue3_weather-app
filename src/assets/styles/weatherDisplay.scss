@@ -63,23 +63,22 @@
     grid-template-columns: repeat(4, 140px);
     font-size: 15px;
     gap: 1%;
-
-    &-icon {
-      margin-left: -12px;
-    }
-
+    
     &-hourly {
-      padding: 10px 20px;
       color: aliceblue;
       background-color: rgba(255, 255, 255, 0.2);
       border-radius: 16px;
-      padding-left: -10px;
+      padding: 10px 20px;
     }
-
+    
     &-temp {
       display: flex;
       align-items: center;
       font-size: 24px;
+    }
+
+    &-icon {
+      margin-left: -12px;
     }
 
     &-status {

@@ -3,22 +3,44 @@
     <main>
       <div class="title">Weather App</div>
 
-      <div class="search-box">
-        <input
-          type="text"
-          class="search-bar"
-          placeholder="Type city name"
-          v-model="city[0]"
-          @input="debouncedFetchCities"
-          @focus="(showCities = true), (errorMessage = '')"
-          @keyup.down="onArrowDown"
-          @keyup.esc="clearInput"
-          @keyup.enter="onEnter"
-          @keyup.up="onArrowUp"
-          @click.stop
-        />
+      <div class="city-search">
+        <div class="search-box">
+          <input
+            type="text"
+            class="search-bar"
+            placeholder="Type city name"
+            v-model="city[0]"
+            @input="debouncedFetchCities"
+            @focus="(showCities = true), (errorMessage = '')"
+            @keyup.down="onArrowDown"
+            @keyup.esc="clearInput"
+            @keyup.enter="onEnter"
+            @keyup.up="onArrowUp"
+            @click.stop
+          />
 
-        <button class="clear-button" v-if="city" @click="clearInput">×</button>
+          <button class="clear-button" v-if="city.length" @click="clearInput">
+            ×
+          </button>
+        </div>
+
+        <TransitionGroup name="list">
+          <ul
+            v-if="showCities && cities.length"
+            ref="dropdown"
+            class="autocomplete-dropdown"
+          >
+            <li
+              v-for="(city, index) in cities"
+              :key="index"
+              @click="selectCity(city, index)"
+              ref="options"
+              :class="{ 'is-active': index === arrowCounter }"
+            >
+              {{ city[0] }}
+            </li>
+          </ul>
+        </TransitionGroup>
       </div>
 
       <ErrorMessage
@@ -35,25 +57,11 @@
         </template>
       </ErrorMessage>
 
-      <ul
-        v-if="showCities && cities.length"
-        ref="dropdown"
-        class="autocomplete-dropdown"
-      >
-        <li
-          v-for="(city, index) in cities"
-          :key="index"
-          @click="selectCity(city, index)"
-          ref="options"
-          :class="{ 'is-active': index === arrowCounter }"
-        >
-          {{ city[0] }}
-        </li>
-      </ul>
-
       <WeatherDisplay
+        v-if="showWeather"
         :city="location"
         :weather="weather"
+        :forecast="forecast"
         :showWeather="showWeather"
       />
     </main>
@@ -64,7 +72,7 @@
 import ErrorMessage from './components/ErrorMessage.vue';
 import WeatherDisplay from './components/WeatherDisplay.vue';
 import { buildDate, debounce, ERRORS } from './utils';
-import { getCities, getWeather } from './api/weather';
+import { getCities, getWeather, getHourlyForecast } from './api/weather';
 
 export default {
   name: 'App',
@@ -76,6 +84,7 @@ export default {
     return {
       city: [],
       weather: {},
+      forecast: [],
       cities: [],
       lastCity: '',
       showWeather: false,
@@ -109,21 +118,34 @@ export default {
       this.errorMessage = '';
 
       if (this.city && this.city !== this.lastCity) {
-        getWeather(this.city[1], this.city[2])
-          .then(({ data }) => {
-            this.weather = data;
-            this.showCities = false;
-            this.showWeather = true;
-            this.location = this.city[0];
-          })
-          .catch(() => {
-            this.showWeather = false;
-            this.showCities = false;
-            this.errorMessage = `${ERRORS.NO_WEATHER}: ${this.city[0]}.`;
-          })
-          .finally(() => {
-            this.lastCity = this.city;
-          });
+        Promise.all([
+          getWeather(this.city[1], this.city[2])
+            .then(({ data }) => {
+              this.weather = data;
+              this.showCities = false;
+              this.showWeather = true;
+              this.location = this.city[0];
+            })
+            .catch(() => {
+              this.showWeather = false;
+              this.showCities = false;
+              this.errorMessage = `${ERRORS.NO_WEATHER}: ${this.city[0]}.`;
+            })
+            .finally(() => {
+              this.lastCity = this.city;
+            }),
+
+          getHourlyForecast(this.city[1], this.city[2])
+            .then(({ data }) => {
+              this.forecast = data.list;
+              console.log(this.forecast);
+            })
+            .catch(() => {
+              this.showWeather = false;
+              this.showCities = false;
+              this.errorMessage = `${ERRORS.NO_WEATHER}: ${this.city[0]}.`;
+            })
+        ]);
       }
     },
 
@@ -211,3 +233,18 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.list-enter-active,
+.list-leave-active {
+  max-height: 250px;
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(0);
+}
+</style>

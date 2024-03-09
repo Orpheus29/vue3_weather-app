@@ -39,27 +39,27 @@ main {
   margin-bottom: 25px;
 }
 
-.search-box {
+.city-search {
   width: 100%;
-  margin-bottom: 5px;
   position: relative;
+}
+
+.search-box {
+  margin-bottom: 5px;
 
   & .search-bar {
-    display: block;
     width: 100%;
     padding: 15px;
 
     color: #313131;
     font-size: 20px;
-    appearance: none;
     border: none;
     outline: none;
-    background: none;
 
     box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 0px 16px 0px 16px;
-    transition: 0.4s;
+    transition: box-shadow, background-color, border-radius 0.4s;
   }
 
   & .search-bar:focus {
@@ -83,9 +83,10 @@ main {
 
 .autocomplete-dropdown {
   position: absolute;
-  width: 100%;
   list-style: none;
-  margin-inline: 10px;
+  left: 10px;
+  right: 10px;
+  max-height: 250px;
   border: 1px solid #ccc;
   border-top: none;
   border-radius: 0 0 5px 5px;
@@ -105,52 +106,5 @@ main {
     &.is-active {
       background-color: rgba(242, 242, 242, 0.6);
     }
-  }
-}
-
-.weather-wrap {
-  margin-top: 30px;
-}
-
-.location-box {
-  text-align: center;
-  font-weight: 500;
-  color: #fff;
-
-  .location {
-    font-size: 32px;
-    margin-bottom: 20px;
-  }
-
-  .date {
-    font-size: 16px;
-    font-style: italic;
-
-    &-title {
-      font-size: 18px;
-      font-style: normal;
-      margin-bottom: 4px;
-    }
-  }
-}
-
-.weather-box {
-  text-align: center;
-
-  & .temp {
-    display: inline-block;
-    padding: 10px 25px;
-    color: aliceblue;
-    font-size: 95px;
-    font-weight: 500;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    margin-bottom: 30px;
-  }
-
-  & .weather {
-    color: #fff;
-    font-size: 40px;
-    font-weight: 500;
   }
 }

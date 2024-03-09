@@ -1,0 +1,89 @@
+.weather {
+  margin-top: 30px;
+  color: #fff;
+  text-align: center;
+  font-weight: 500;
+
+  & .location-box {
+    margin-bottom: 20px;
+
+    .location {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .date {
+      font-size: 16px;
+      font-style: italic;
+
+      &-title {
+        font-size: 18px;
+        font-style: normal;
+        margin-bottom: 4px;
+        color: aliceblue;
+      }
+    }
+  }
+
+  &-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 5%;
+  }
+
+  &-now {
+    margin-top: -20px;
+
+    &-status {
+      font-size: 32px;
+      margin-top: -20px;
+    }
+
+    &-temp {
+      padding-inline: 25px;
+      color: aliceblue;
+      font-size: 48px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      margin-block: 20px;
+
+      &-minmax {
+        margin-bottom: 15px;
+      }
+    }
+
+    &-etc {
+      text-align: left;
+    }
+  }
+
+  &-forecast {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 140px);
+    font-size: 15px;
+    gap: 1%;
+
+    &-icon {
+      margin-left: -12px;
+    }
+
+    &-hourly {
+      padding: 10px 20px;
+      color: aliceblue;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding-left: -10px;
+    }
+
+    &-temp {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+    }
+
+    &-status {
+      font-size: 18px;
+    }
+  }
+}

@@ -18,3 +18,21 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="scss">
+.message {
+  transform-origin: top center;
+  transition-property: opacity, transform;
+  transition-duration: .3s;
+
+  &-body {
+    padding-left: 15px;
+  }
+
+  &--hidden {
+    transform: scaleY(0);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+</style>
